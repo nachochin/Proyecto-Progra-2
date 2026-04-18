@@ -155,11 +155,11 @@ public class EnvioCorreo {
 
         // 1. Configurar propiedades SMTP
         Properties props = new Properties();
+        props.put("mail.smtp.host", "securemail.comredcr.com");
+        props.put("mail.smtp.port", "465");
         props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.starttls.enable", "true");
-        props.put("mail.smtp.host", host);
-        props.put("mail.smtp.port", String.valueOf(puerto));
-        props.put("mail.smtp.ssl.trust", host);
+        props.put("mail.smtp.ssl.enable", "true");
+        props.put("mail.smtp.ssl.protocols", "TLSv1.2");
 
         // 2. Crear sesión con autenticación
         Session sesion = Session.getInstance(props, new Authenticator() {
