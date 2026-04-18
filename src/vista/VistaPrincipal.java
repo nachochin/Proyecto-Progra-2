@@ -79,7 +79,7 @@ public class VistaPrincipal extends JFrame {
      * Configura las propiedades básicas de la ventana.
      */
     private void configurarVentana() {
-        setTitle("Nómina CR");
+        setTitle("conómina cr");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(1100, 700);
         setLocationRelativeTo(null);
@@ -104,7 +104,7 @@ public class VistaPrincipal extends JFrame {
         panelLogo.setBackground(SIDEBAR);
         panelLogo.setBorder(new EmptyBorder(24, 20, 20, 20));
 
-        JLabel logoIcon = new JLabel("N") {
+        JLabel logoIcon = new JLabel("cn") {
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
@@ -115,9 +115,9 @@ public class VistaPrincipal extends JFrame {
                 g2.setColor(Color.WHITE);
                 g2.setFont(new Font("Segoe UI", Font.BOLD, 14));
                 FontMetrics fm = g2.getFontMetrics();
-                int x = (getWidth() - fm.stringWidth("N")) / 2;
+                int x = (getWidth() - fm.stringWidth("cn")) / 2;
                 int y = (getHeight() + fm.getAscent() - fm.getDescent()) / 2;
-                g2.drawString("N", x, y);
+                g2.drawString("cn", x, y);
                 g2.dispose();
             }
         };
@@ -125,7 +125,7 @@ public class VistaPrincipal extends JFrame {
         logoIcon.setMaximumSize(new Dimension(32, 32));
         logoIcon.setAlignmentX(LEFT_ALIGNMENT);
 
-        JLabel lblNombre = new JLabel("Nómina CR");
+        JLabel lblNombre = new JLabel("conómina cr");
         lblNombre.setFont(new Font("Segoe UI", Font.BOLD, 17));
         lblNombre.setForeground(Color.WHITE);
         lblNombre.setAlignmentX(LEFT_ALIGNMENT);
@@ -260,9 +260,9 @@ public class VistaPrincipal extends JFrame {
                 g2.setColor(AZUL);
                 g2.setFont(new Font("Segoe UI", Font.BOLD, 28));
                 FontMetrics fm = g2.getFontMetrics();
-                int x = (getWidth() - fm.stringWidth("N")) / 2;
+                int x = (getWidth() - fm.stringWidth("cn")) / 2;
                 int y = (getHeight() + fm.getAscent() - fm.getDescent()) / 2;
-                g2.drawString("N", x, y);
+                g2.drawString("cn", x, y);
                 g2.dispose();
             }
         };
@@ -324,13 +324,95 @@ public class VistaPrincipal extends JFrame {
      * a la ventana de login.
      */
     private void cerrarSesion() {
-        int op = JOptionPane.showConfirmDialog(this,
-                "¿Desea cerrar sesión?", "Confirmar",
-                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-        if (op == JOptionPane.YES_OPTION) {
+        JDialog dialogo = new JDialog(this, "Cerrar sesión", true);
+        dialogo.setUndecorated(true);
+        dialogo.setSize(360, 180);
+        dialogo.setLocationRelativeTo(this);
+
+        JPanel panel = new JPanel(new BorderLayout(0, 0));
+        panel.setBackground(Color.WHITE);
+        panel.setBorder(BorderFactory.createLineBorder(new Color(226, 232, 240), 1));
+
+        // Encabezado
+        JPanel header = new JPanel(new BorderLayout());
+        header.setBackground(Color.WHITE);
+        header.setBorder(new EmptyBorder(20, 24, 12, 24));
+        JLabel lblTitulo = new JLabel("¿Cerrar sesión?");
+        lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 16));
+        lblTitulo.setForeground(new Color(30, 30, 60));
+        JLabel lblSub = new JLabel("Tu sesión actual se cerrará.");
+        lblSub.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        lblSub.setForeground(new Color(100, 116, 139));
+        JPanel headerTexto = new JPanel(new GridLayout(2, 1, 0, 4));
+        headerTexto.setBackground(Color.WHITE);
+        headerTexto.add(lblTitulo);
+        headerTexto.add(lblSub);
+        header.add(headerTexto);
+
+        // Botones
+        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.RIGHT, 12, 16));
+        panelBotones.setBackground(Color.WHITE);
+        panelBotones.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, new Color(226, 232, 240)));
+
+        JButton btnNo = new JButton("Cancelar") {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(getModel().isRollover() ? new Color(248, 249, 252) : Color.WHITE);
+                g2.fill(new java.awt.geom.RoundRectangle2D.Float(0, 0, getWidth(), getHeight(), 8, 8));
+                g2.setColor(new Color(226, 232, 240));
+                g2.draw(new java.awt.geom.RoundRectangle2D.Float(0, 0, getWidth() - 1, getHeight() - 1, 8, 8));
+                g2.setColor(new Color(30, 30, 60));
+                g2.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+                FontMetrics fm = g2.getFontMetrics();
+                g2.drawString(getText(), (getWidth() - fm.stringWidth(getText())) / 2,
+                        (getHeight() + fm.getAscent() - fm.getDescent()) / 2);
+                g2.dispose();
+            }
+        };
+        btnNo.setPreferredSize(new Dimension(100, 36));
+        btnNo.setContentAreaFilled(false);
+        btnNo.setBorderPainted(false);
+        btnNo.setFocusPainted(false);
+        btnNo.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnNo.addActionListener(e -> dialogo.dispose());
+
+        JButton btnSi = new JButton("Cerrar sesión") {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                Color bg = new Color(220, 38, 38);
+                g2.setColor(getModel().isPressed() ? bg.darker() : getModel().isRollover() ? bg.brighter() : bg);
+                g2.fill(new java.awt.geom.RoundRectangle2D.Float(0, 0, getWidth(), getHeight(), 8, 8));
+                g2.setColor(Color.WHITE);
+                g2.setFont(new Font("Segoe UI", Font.BOLD, 12));
+                FontMetrics fm = g2.getFontMetrics();
+                g2.drawString(getText(), (getWidth() - fm.stringWidth(getText())) / 2,
+                        (getHeight() + fm.getAscent() - fm.getDescent()) / 2);
+                g2.dispose();
+            }
+        };
+        btnSi.setPreferredSize(new Dimension(130, 36));
+        btnSi.setContentAreaFilled(false);
+        btnSi.setBorderPainted(false);
+        btnSi.setFocusPainted(false);
+        btnSi.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnSi.addActionListener(e -> {
+            dialogo.dispose();
             dispose();
             new VistaLogin().setVisible(true);
-        }
+        });
+
+        panelBotones.add(btnNo);
+        panelBotones.add(btnSi);
+
+        panel.add(header, BorderLayout.CENTER);
+        panel.add(panelBotones, BorderLayout.SOUTH);
+
+        dialogo.setContentPane(panel);
+        dialogo.setVisible(true);
     }
 
     /**

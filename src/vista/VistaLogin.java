@@ -73,7 +73,7 @@ public class VistaLogin extends JFrame {
      * Configura las propiedades básicas de la ventana (título, cierre, resize).
      */
     private void configurarVentana() {
-        setTitle("Nómina CR — Iniciar sesión");
+        setTitle("conómina cr — Iniciar sesión");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false);
     }
@@ -100,7 +100,7 @@ public class VistaLogin extends JFrame {
         JPanel logoPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
         logoPanel.setBackground(Color.WHITE);
         logoPanel.setAlignmentX(CENTER_ALIGNMENT);
-        JLabel logoLabel = new JLabel("N") {
+        JLabel logoLabel = new JLabel("cn") {
             @Override
             protected void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g.create();
@@ -113,7 +113,7 @@ public class VistaLogin extends JFrame {
                 FontMetrics fm = g2.getFontMetrics();
                 int x = (getWidth() - fm.stringWidth("N")) / 2;
                 int y = (getHeight() + fm.getAscent() - fm.getDescent()) / 2;
-                g2.drawString("N", x, y);
+                g2.drawString("cn", x, y);
                 g2.dispose();
             }
         };
@@ -123,7 +123,7 @@ public class VistaLogin extends JFrame {
         tarjeta.add(Box.createRigidArea(new Dimension(0, 14)));
 
         // Título y subtítulo
-        JLabel lblTitulo = new JLabel("Nómina CR", SwingConstants.CENTER);
+        JLabel lblTitulo = new JLabel("conómina cr", SwingConstants.CENTER);
         lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 20));
         lblTitulo.setForeground(TEXTO);
         lblTitulo.setAlignmentX(CENTER_ALIGNMENT);
@@ -180,7 +180,7 @@ public class VistaLogin extends JFrame {
         tarjeta.add(Box.createVerticalGlue());
 
         // Versión
-        JLabel lblVersion = new JLabel("Nómina CR · v1.1", SwingConstants.CENTER);
+        JLabel lblVersion = new JLabel("conómina cr · v1.1", SwingConstants.CENTER);
         lblVersion.setFont(new Font("Segoe UI", Font.PLAIN, 10));
         lblVersion.setForeground(SUBTEXTO);
         lblVersion.setAlignmentX(CENTER_ALIGNMENT);

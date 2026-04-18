@@ -13,37 +13,67 @@ import logica.GestionVacaciones;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import java.awt.*;
+import java.awt.geom.RoundRectangle2D;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 
 /**
- * * Vista para la gestión completa de empleados (CRUD).
+ * Vista para la gestión completa de empleados (CRUD).
  * <p>
  * Muestra una tabla con todos los empleados registrados y permite crear, editar
  * y eliminar empleados mediante un formulario integrado. Al crear un empleado
  * también inicializa su saldo de vacaciones en cero.
  * </p>
  *
- * @author ekaro
- * @version 1.0
+ * @version 1.1
  */
 public class VistaEmpleados extends JPanel {
 
-    // -------------------------------------------------------------------------
-    // Componentes
-    // -------------------------------------------------------------------------
+    // ── Componentes ──────────────────────────────────────────────────────────
+    /**
+     * Tabla que muestra el listado de empleados.
+     */
     private JTable tablaEmpleados;
+
+    /**
+     * Modelo de datos de la tabla.
+     */
     private DefaultTableModel modeloTabla;
+
+    /**
+     * Campos del formulario lateral.
+     */
     private JTextField txtId, txtNombre, txtCorreo, txtSalario, txtFecha;
+
+    /**
+     * Selector del tipo de contrato.
+     */
     private JComboBox<String> cmbTipoContrato;
+
+    /**
+     * Botones de acción del formulario.
+     */
     private JButton btnGuardar, btnEditar, btnEliminar, btnLimpiar;
+
+    /**
+     * Título dinámico del formulario (Nuevo / Editar).
+     */
     private JLabel lblTituloFormulario;
 
-    // DAOs
+    // ── DAOs ─────────────────────────────────────────────────────────────────
+    /**
+     * DAO para operaciones CRUD de empleados.
+     */
     private EmpleadoDAO empleadoDAO;
+
+    /**
+     * DAO para operaciones sobre vacaciones.
+     */
     private VacacionesDAO vacacionesDAO;
 
     /**
@@ -51,39 +81,82 @@ public class VistaEmpleados extends JPanel {
      */
     private boolean modoEdicion = false;
 
-    // -------------------------------------------------------------------------
-    // Constructor
-    // -------------------------------------------------------------------------
+    // ── Paleta ───────────────────────────────────────────────────────────────
+    /**
+     * Color de acento principal — azul corporativo.
+     */
+    private static final Color AZUL = new Color(37, 99, 235);
+
+    /**
+     * Color de fondo general.
+     */
+    private static final Color FONDO = new Color(248, 249, 252);
+
+    /**
+     * Color de texto principal.
+     */
+    private static final Color TEXTO = new Color(30, 30, 60);
+
+    /**
+     * Color de texto secundario.
+     */
+    private static final Color GRIS = new Color(100, 116, 139);
+
+    /**
+     * Color de borde para campos y tarjetas.
+     */
+    private static final Color BORDE = new Color(226, 232, 240);
+
+    /**
+     * Color para botón de éxito (guardar/actualizar).
+     */
+    private static final Color VERDE = new Color(22, 163, 74);
+
+    /**
+     * Color para botón de peligro (eliminar).
+     */
+    private static final Color ROJO = new Color(220, 38, 38);
+
+    // ── Constructor ──────────────────────────────────────────────────────────
     /**
      * Construye la vista de gestión de empleados e inicializa los componentes.
      */
     public VistaEmpleados() {
         this.empleadoDAO = new EmpleadoDAO();
         this.vacacionesDAO = new VacacionesDAO();
-        setLayout(new BorderLayout(12, 0));
-        setBackground(new Color(245, 245, 248));
-        setBorder(new EmptyBorder(20, 20, 20, 20));
+        setLayout(new BorderLayout(16, 0));
+        setBackground(FONDO);
+        setBorder(new EmptyBorder(24, 24, 24, 24));
         inicializarComponentes();
         cargarTabla();
+        limpiarFormulario(); // genera el ID automático al abrir
     }
 
-    // -------------------------------------------------------------------------
-    // Inicialización
-    // -------------------------------------------------------------------------
+    // ── Inicialización ───────────────────────────────────────────────────────
     /**
      * Crea y organiza todos los componentes de la vista.
      */
     private void inicializarComponentes() {
-        // --- Encabezado ---
-        JLabel lblTitulo = new JLabel("Gestión de Empleados");
-        lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        lblTitulo.setForeground(new Color(30, 30, 60));
-        lblTitulo.setBorder(new EmptyBorder(0, 0, 12, 0));
-        add(lblTitulo, BorderLayout.NORTH);
 
-        // --- Tabla ---
-        String[] columnas = {"ID", "Nombre", "Correo", "Salario Base",
-            "Tipo Contrato", "Fecha Ingreso"};
+        // Encabezado
+        JPanel header = new JPanel(new BorderLayout());
+        header.setBackground(FONDO);
+        header.setBorder(new EmptyBorder(0, 0, 16, 0));
+        JLabel lblTitulo = new JLabel("Gestión de Empleados");
+        lblTitulo.setFont(new Font("Segoe UI", Font.BOLD, 22));
+        lblTitulo.setForeground(TEXTO);
+        JLabel lblSub = new JLabel("Administrá el personal registrado en el sistema");
+        lblSub.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        lblSub.setForeground(GRIS);
+        JPanel headerTexto = new JPanel(new GridLayout(2, 1, 0, 2));
+        headerTexto.setBackground(FONDO);
+        headerTexto.add(lblTitulo);
+        headerTexto.add(lblSub);
+        header.add(headerTexto, BorderLayout.WEST);
+        add(header, BorderLayout.NORTH);
+
+        // Tabla
+        String[] columnas = {"ID", "Nombre", "Correo", "Salario Base", "Tipo Contrato", "Fecha Ingreso"};
         modeloTabla = new DefaultTableModel(columnas, 0) {
             @Override
             public boolean isCellEditable(int row, int col) {
@@ -92,34 +165,52 @@ public class VistaEmpleados extends JPanel {
         };
         tablaEmpleados = new JTable(modeloTabla);
         tablaEmpleados.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        tablaEmpleados.setRowHeight(28);
-        tablaEmpleados.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 12));
-        tablaEmpleados.setSelectionBackground(new Color(200, 210, 240));
-        tablaEmpleados.setGridColor(new Color(230, 230, 235));
+        tablaEmpleados.setRowHeight(36);
+        tablaEmpleados.setShowVerticalLines(false);
+        tablaEmpleados.setGridColor(BORDE);
+        tablaEmpleados.setBackground(Color.WHITE);
+        tablaEmpleados.setSelectionBackground(new Color(219, 234, 254));
+        tablaEmpleados.setSelectionForeground(TEXTO);
+        tablaEmpleados.setIntercellSpacing(new Dimension(0, 0));
+
+        // Header tabla
+        JTableHeader tableHeader = tablaEmpleados.getTableHeader();
+        tableHeader.setFont(new Font("Segoe UI", Font.BOLD, 11));
+        tableHeader.setBackground(FONDO);
+        tableHeader.setForeground(GRIS);
+        tableHeader.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, BORDE));
+        tableHeader.setPreferredSize(new Dimension(0, 36));
+
+        // Renderer centrado
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(SwingConstants.LEFT);
+        for (int i = 0; i < columnas.length; i++) {
+            tablaEmpleados.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+        }
 
         JScrollPane scrollTabla = new JScrollPane(tablaEmpleados);
-        scrollTabla.setBorder(BorderFactory.createLineBorder(new Color(220, 220, 230)));
+        scrollTabla.setBorder(BorderFactory.createLineBorder(BORDE, 1, true));
+        scrollTabla.getViewport().setBackground(Color.WHITE);
 
-        // Listener de selección en tabla
         tablaEmpleados.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting() && tablaEmpleados.getSelectedRow() >= 0) {
                 cargarEmpleadoEnFormulario();
             }
         });
 
-        // --- Formulario lateral ---
+        // Formulario lateral
         JPanel panelFormulario = new JPanel();
         panelFormulario.setLayout(new BoxLayout(panelFormulario, BoxLayout.Y_AXIS));
         panelFormulario.setBackground(Color.WHITE);
         panelFormulario.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(220, 220, 230), 1, true),
-                new EmptyBorder(20, 20, 20, 20)));
-        panelFormulario.setPreferredSize(new Dimension(280, 0));
+                BorderFactory.createLineBorder(BORDE, 1, true),
+                new EmptyBorder(24, 20, 20, 20)));
+        panelFormulario.setPreferredSize(new Dimension(290, 0));
 
         lblTituloFormulario = new JLabel("Nuevo empleado");
-        lblTituloFormulario.setFont(new Font("Segoe UI", Font.BOLD, 14));
-        lblTituloFormulario.setForeground(new Color(30, 30, 60));
-        lblTituloFormulario.setAlignmentX(Component.LEFT_ALIGNMENT);
+        lblTituloFormulario.setFont(new Font("Segoe UI", Font.BOLD, 15));
+        lblTituloFormulario.setForeground(TEXTO);
+        lblTituloFormulario.setAlignmentX(LEFT_ALIGNMENT);
 
         txtId = crearCampo("ID");
         txtNombre = crearCampo("Nombre completo");
@@ -127,51 +218,51 @@ public class VistaEmpleados extends JPanel {
         txtSalario = crearCampo("Salario base (₡)");
         txtFecha = crearCampo("Fecha ingreso (YYYY-MM-DD)");
 
-        JLabel lblContrato = new JLabel("Tipo de contrato");
-        lblContrato.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-        lblContrato.setForeground(new Color(90, 90, 110));
-        lblContrato.setAlignmentX(Component.LEFT_ALIGNMENT);
-        cmbTipoContrato = new JComboBox<>(
-                new String[]{"TIEMPO_COMPLETO", "MEDIO_TIEMPO"});
+        JLabel lblContrato = new JLabel("TIPO DE CONTRATO");
+        lblContrato.setFont(new Font("Segoe UI", Font.BOLD, 10));
+        lblContrato.setForeground(GRIS);
+        lblContrato.setAlignmentX(LEFT_ALIGNMENT);
+
+        cmbTipoContrato = new JComboBox<>(new String[]{"TIEMPO_COMPLETO", "MEDIO_TIEMPO"});
         cmbTipoContrato.setFont(new Font("Segoe UI", Font.PLAIN, 13));
-        cmbTipoContrato.setMaximumSize(new Dimension(Integer.MAX_VALUE, 34));
-        cmbTipoContrato.setAlignmentX(Component.LEFT_ALIGNMENT);
+        cmbTipoContrato.setMaximumSize(new Dimension(Integer.MAX_VALUE, 36));
+        cmbTipoContrato.setAlignmentX(LEFT_ALIGNMENT);
+        cmbTipoContrato.setBackground(Color.WHITE);
 
         // Botones
-        JPanel panelBotones = new JPanel(new GridLayout(2, 2, 6, 6));
-        panelBotones.setBackground(Color.WHITE);
-        panelBotones.setMaximumSize(new Dimension(Integer.MAX_VALUE, 80));
-        panelBotones.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        btnGuardar = crearBoton("Guardar", new Color(30, 120, 70));
-        btnEditar = crearBoton("Actualizar", new Color(30, 80, 160));
-        btnEliminar = crearBoton("Eliminar", new Color(180, 40, 40));
-        btnLimpiar = crearBoton("Limpiar", new Color(100, 100, 120));
+        btnGuardar = crearBoton("Guardar", AZUL);
+        btnEditar = crearBoton("Actualizar", VERDE);
+        btnEliminar = crearBoton("Eliminar", ROJO);
+        btnLimpiar = crearBoton("Limpiar", GRIS);
 
         btnEditar.setEnabled(false);
         btnEliminar.setEnabled(false);
 
+        JPanel panelBotones = new JPanel(new GridLayout(2, 2, 8, 8));
+        panelBotones.setBackground(Color.WHITE);
+        panelBotones.setMaximumSize(new Dimension(Integer.MAX_VALUE, 88));
+        panelBotones.setAlignmentX(LEFT_ALIGNMENT);
         panelBotones.add(btnGuardar);
         panelBotones.add(btnEditar);
         panelBotones.add(btnEliminar);
         panelBotones.add(btnLimpiar);
 
         panelFormulario.add(lblTituloFormulario);
-        panelFormulario.add(Box.createVerticalStrut(14));
+        panelFormulario.add(Box.createVerticalStrut(16));
         panelFormulario.add(txtId.getParent());
-        panelFormulario.add(Box.createVerticalStrut(8));
+        panelFormulario.add(Box.createVerticalStrut(10));
         panelFormulario.add(txtNombre.getParent());
-        panelFormulario.add(Box.createVerticalStrut(8));
+        panelFormulario.add(Box.createVerticalStrut(10));
         panelFormulario.add(txtCorreo.getParent());
-        panelFormulario.add(Box.createVerticalStrut(8));
+        panelFormulario.add(Box.createVerticalStrut(10));
         panelFormulario.add(txtSalario.getParent());
-        panelFormulario.add(Box.createVerticalStrut(8));
+        panelFormulario.add(Box.createVerticalStrut(10));
         panelFormulario.add(txtFecha.getParent());
-        panelFormulario.add(Box.createVerticalStrut(8));
+        panelFormulario.add(Box.createVerticalStrut(10));
         panelFormulario.add(lblContrato);
         panelFormulario.add(Box.createVerticalStrut(4));
         panelFormulario.add(cmbTipoContrato);
-        panelFormulario.add(Box.createVerticalStrut(16));
+        panelFormulario.add(Box.createVerticalStrut(20));
         panelFormulario.add(panelBotones);
 
         add(scrollTabla, BorderLayout.CENTER);
@@ -180,9 +271,7 @@ public class VistaEmpleados extends JPanel {
         registrarEventos();
     }
 
-    // -------------------------------------------------------------------------
-    // Eventos
-    // -------------------------------------------------------------------------
+    // ── Eventos ──────────────────────────────────────────────────────────────
     /**
      * Registra los listeners de los botones del formulario.
      */
@@ -193,9 +282,7 @@ public class VistaEmpleados extends JPanel {
         btnLimpiar.addActionListener(e -> limpiarFormulario());
     }
 
-    // -------------------------------------------------------------------------
-    // Operaciones CRUD
-    // -------------------------------------------------------------------------
+    // ── Operaciones CRUD ─────────────────────────────────────────────────────
     /**
      * Crea un nuevo empleado con los datos del formulario y lo guarda. También
      * inicializa su saldo de vacaciones en cero.
@@ -204,15 +291,11 @@ public class VistaEmpleados extends JPanel {
         try {
             Empleado emp = leerFormulario();
             empleadoDAO.guardar(emp);
-
-            // Inicializar vacaciones para el nuevo empleado
             GestionVacaciones gv = new GestionVacaciones(null, emp, vacacionesDAO);
             gv.inicializarSaldo();
-
             mostrarExito("Empleado guardado correctamente.");
             cargarTabla();
             limpiarFormulario();
-
         } catch (IllegalArgumentException ex) {
             mostrarError("Datos inválidos: " + ex.getMessage());
         } catch (ArchivoInvalidoException ex) {
@@ -230,7 +313,6 @@ public class VistaEmpleados extends JPanel {
             mostrarExito("Empleado actualizado correctamente.");
             cargarTabla();
             limpiarFormulario();
-
         } catch (IllegalArgumentException ex) {
             mostrarError("Datos inválidos: " + ex.getMessage());
         } catch (ArchivoInvalidoException ex) {
@@ -247,11 +329,9 @@ public class VistaEmpleados extends JPanel {
             mostrarError("Seleccione un empleado.");
             return;
         }
-
         int opcion = JOptionPane.showConfirmDialog(this,
                 "¿Eliminar el empleado con ID " + id + "? Esta acción no se puede deshacer.",
                 "Confirmar eliminación", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-
         if (opcion == JOptionPane.YES_OPTION) {
             try {
                 empleadoDAO.eliminar(id);
@@ -265,9 +345,7 @@ public class VistaEmpleados extends JPanel {
         }
     }
 
-    // -------------------------------------------------------------------------
-    // Utilidades de la vista
-    // -------------------------------------------------------------------------
+    // ── Utilidades ───────────────────────────────────────────────────────────
     /**
      * Recarga la tabla con todos los empleados del archivo.
      */
@@ -295,17 +373,13 @@ public class VistaEmpleados extends JPanel {
         if (fila < 0) {
             return;
         }
-
         txtId.setText(modeloTabla.getValueAt(fila, 0).toString());
         txtNombre.setText(modeloTabla.getValueAt(fila, 1).toString());
         txtCorreo.setText(modeloTabla.getValueAt(fila, 2).toString());
-        // Quitar formato de moneda para editar
-        String salarioStr = modeloTabla.getValueAt(fila, 3).toString()
-                .replace("₡", "").replace(",", "");
+        String salarioStr = modeloTabla.getValueAt(fila, 3).toString().replace("₡", "").replace(",", "");
         txtSalario.setText(salarioStr);
         cmbTipoContrato.setSelectedItem(modeloTabla.getValueAt(fila, 4).toString());
         txtFecha.setText(modeloTabla.getValueAt(fila, 5).toString());
-
         lblTituloFormulario.setText("Editar empleado");
         txtId.setEditable(false);
         modoEdicion = true;
@@ -329,11 +403,9 @@ public class VistaEmpleados extends JPanel {
         String fecha = txtFecha.getText().trim();
         String tipo = (String) cmbTipoContrato.getSelectedItem();
 
-        if (id.isEmpty() || nombre.isEmpty() || correo.isEmpty()
-                || salStr.isEmpty() || fecha.isEmpty()) {
+        if (id.isEmpty() || nombre.isEmpty() || correo.isEmpty() || salStr.isEmpty() || fecha.isEmpty()) {
             throw new IllegalArgumentException("Todos los campos son obligatorios.");
         }
-
         double salario;
         try {
             salario = Double.parseDouble(salStr);
@@ -343,14 +415,12 @@ public class VistaEmpleados extends JPanel {
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("El salario debe ser un número mayor a cero.");
         }
-
         LocalDate fechaIngreso;
         try {
             fechaIngreso = LocalDate.parse(fecha);
         } catch (DateTimeParseException e) {
             throw new IllegalArgumentException("Fecha inválida. Use el formato YYYY-MM-DD.");
         }
-
         return new Empleado(id, nombre, correo, salario, tipo, fechaIngreso);
     }
 
@@ -358,13 +428,17 @@ public class VistaEmpleados extends JPanel {
      * Limpia todos los campos del formulario y regresa al modo creación.
      */
     private void limpiarFormulario() {
-        txtId.setText("");
+        try {
+            txtId.setText(empleadoDAO.generarSiguienteId());
+        } catch (ArchivoInvalidoException ex) {
+            txtId.setText("");
+        }
         txtNombre.setText("");
         txtCorreo.setText("");
         txtSalario.setText("");
         txtFecha.setText("");
         cmbTipoContrato.setSelectedIndex(0);
-        txtId.setEditable(true);
+        txtId.setEditable(false);
         lblTituloFormulario.setText("Nuevo empleado");
         modoEdicion = false;
         btnGuardar.setEnabled(true);
@@ -374,26 +448,28 @@ public class VistaEmpleados extends JPanel {
     }
 
     /**
-     * Crea un panel etiqueta + campo de texto alineado para el formulario.
+     * Crea un panel con etiqueta en mayúsculas y campo de texto estilizado.
      *
      * @param etiqueta Texto de la etiqueta superior del campo.
      * @return El {@link JTextField} creado (su parent contiene la etiqueta).
      */
     private JTextField crearCampo(String etiqueta) {
-        JPanel panel = new JPanel(new BorderLayout(0, 3));
+        JPanel panel = new JPanel(new BorderLayout(0, 4));
         panel.setBackground(Color.WHITE);
-        panel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 54));
+        panel.setAlignmentX(LEFT_ALIGNMENT);
+        panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 56));
 
-        JLabel lbl = new JLabel(etiqueta);
-        lbl.setFont(new Font("Segoe UI", Font.PLAIN, 11));
-        lbl.setForeground(new Color(90, 90, 110));
+        JLabel lbl = new JLabel(etiqueta.toUpperCase());
+        lbl.setFont(new Font("Segoe UI", Font.BOLD, 10));
+        lbl.setForeground(GRIS);
 
         JTextField txt = new JTextField();
         txt.setFont(new Font("Segoe UI", Font.PLAIN, 13));
+        txt.setForeground(TEXTO);
+        txt.setBackground(Color.WHITE);
         txt.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(210, 210, 220), 1, true),
-                new EmptyBorder(5, 8, 5, 8)));
+                BorderFactory.createLineBorder(BORDE, 1, true),
+                new EmptyBorder(6, 10, 6, 10)));
 
         panel.add(lbl, BorderLayout.NORTH);
         panel.add(txt, BorderLayout.CENTER);
@@ -401,20 +477,37 @@ public class VistaEmpleados extends JPanel {
     }
 
     /**
-     * Crea un botón estilizado para el panel de acciones del formulario.
+     * Crea un botón redondeado estilizado para el panel de acciones.
      *
      * @param texto Texto del botón.
      * @param color Color de fondo del botón.
-     * @return Botón configurado.
+     * @return Botón configurado con diseño moderno.
      */
     private JButton crearBoton(String texto, Color color) {
-        JButton btn = new JButton(texto);
-        btn.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        btn.setBackground(color);
-        btn.setForeground(Color.WHITE);
+        JButton btn = new JButton(texto) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                Color bg = isEnabled()
+                        ? (getModel().isPressed() ? color.darker() : getModel().isRollover() ? color.brighter() : color)
+                        : new Color(200, 200, 210);
+                g2.setColor(bg);
+                g2.fill(new RoundRectangle2D.Float(0, 0, getWidth(), getHeight(), 8, 8));
+                g2.setColor(isEnabled() ? Color.WHITE : new Color(150, 150, 160));
+                g2.setFont(new Font("Segoe UI", Font.BOLD, 12));
+                FontMetrics fm = g2.getFontMetrics();
+                int x = (getWidth() - fm.stringWidth(getText())) / 2;
+                int y = (getHeight() + fm.getAscent() - fm.getDescent()) / 2;
+                g2.drawString(getText(), x, y);
+                g2.dispose();
+            }
+        };
+        btn.setContentAreaFilled(false);
         btn.setBorderPainted(false);
         btn.setFocusPainted(false);
         btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btn.setPreferredSize(new Dimension(0, 38));
         return btn;
     }
 
@@ -424,8 +517,7 @@ public class VistaEmpleados extends JPanel {
      * @param mensaje Texto del mensaje.
      */
     private void mostrarExito(String mensaje) {
-        JOptionPane.showMessageDialog(this, mensaje,
-                "Éxito", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(this, mensaje, "Éxito", JOptionPane.INFORMATION_MESSAGE);
     }
 
     /**
@@ -434,7 +526,6 @@ public class VistaEmpleados extends JPanel {
      * @param mensaje Texto del error.
      */
     private void mostrarError(String mensaje) {
-        JOptionPane.showMessageDialog(this, mensaje,
-                "Error", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(this, mensaje, "Error", JOptionPane.ERROR_MESSAGE);
     }
 }
