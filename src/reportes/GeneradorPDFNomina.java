@@ -275,7 +275,7 @@ public class GeneradorPDFNomina implements GeneradorReporte {
     private void agregarPiePagina(Document doc) throws DocumentException {
         Paragraph pie = new Paragraph(
                 "Documento generado el " + java.time.LocalDate.now().toString()
-                + "  |  Sistema de Nómina CR  |  Documento informativo",
+                + "  |  Sistema de conómina cr  |  Documento informativo",
                 FUENTE_PEQUENA);
         pie.setAlignment(Element.ALIGN_CENTER);
         doc.add(new LineSeparator());

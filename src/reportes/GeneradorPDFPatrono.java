@@ -228,7 +228,7 @@ public class GeneradorPDFPatrono implements GeneradorReporte {
     private void agregarPiePagina(Document doc) throws DocumentException {
         Paragraph pie = new Paragraph(
                 "Generado el " + java.time.LocalDate.now()
-                + "  |  Sistema de Nómina CR  |  Uso exclusivo del patrono",
+                + "  |  Sistema de conómina cr  |  Uso exclusivo del patrono",
                 FUENTE_PEQUENA);
         pie.setAlignment(Element.ALIGN_CENTER);
         doc.add(new LineSeparator());
