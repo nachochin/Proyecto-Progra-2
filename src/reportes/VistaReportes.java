@@ -1,5 +1,6 @@
 package reportes;
 
+import java.awt.Desktop;
 import datos.EmpleadoDAO;
 import datos.NominaDAO;
 import entidades.Empleado;
@@ -82,7 +83,7 @@ public class VistaReportes extends JPanel {
         panelIzq.add(cmbEmpleados);
         panelIzq.add(espacio(8));
 
-        panelIzq.add(etiqueta("Anio"));
+        panelIzq.add(etiqueta("Año"));
         spnAnio = new JSpinner(new SpinnerNumberModel(LocalDate.now().getYear(), 2020, 2099, 1));
         spnAnio.setMaximumSize(new Dimension(Integer.MAX_VALUE, 32));
         spnAnio.setAlignmentX(LEFT_ALIGNMENT);
@@ -121,24 +122,25 @@ public class VistaReportes extends JPanel {
         panelDer.add(seccion("Configuracion SMTP"));
 
         panelDer.add(etiqueta("Servidor SMTP"));
-        txtHost = campo("smtp.gmail.com");
+        txtHost = campo("securemail.comredcr.com");
         panelDer.add(txtHost);
         panelDer.add(espacio(6));
 
         panelDer.add(etiqueta("Puerto"));
-        spnPuerto = new JSpinner(new SpinnerNumberModel(587, 1, 9999, 1));
+        spnPuerto = new JSpinner(new SpinnerNumberModel(465, 1, 9999, 1));
         spnPuerto.setMaximumSize(new Dimension(Integer.MAX_VALUE, 32));
         spnPuerto.setAlignmentX(LEFT_ALIGNMENT);
         panelDer.add(spnPuerto);
         panelDer.add(espacio(6));
 
         panelDer.add(etiqueta("Correo remitente"));
-        txtUsuarioSMTP = campo("correo@gmail.com");
+        txtUsuarioSMTP = campo("curso_progra2@comredcr.com");
         panelDer.add(txtUsuarioSMTP);
         panelDer.add(espacio(6));
 
         panelDer.add(etiqueta("Clave de aplicacion"));
         txtClaveSMTP = new JPasswordField();
+        txtClaveSMTP.setText("u6X1h1p9@");
         txtClaveSMTP.setFont(new Font("Segoe UI", Font.PLAIN, 13));
         txtClaveSMTP.setMaximumSize(new Dimension(Integer.MAX_VALUE, 32));
         txtClaveSMTP.setAlignmentX(LEFT_ALIGNMENT);
@@ -204,6 +206,11 @@ public class VistaReportes extends JPanel {
             gen.generar(ruta);
 
             log("PDF generado: " + ruta);
+            try {
+                Desktop.getDesktop().open(new File(ruta));
+            } catch (IOException ex) {
+                log("No se pudo abrir el PDF: " + ex.getMessage());
+            }
             JOptionPane.showMessageDialog(this,
                     "PDF generado correctamente:\n" + ruta,
                     "PDF generado",
@@ -231,6 +238,11 @@ public class VistaReportes extends JPanel {
             gen.generar(ruta);
 
             log("PDF patronal generado: " + ruta + " (" + datos.size() + " empleados)");
+            try {
+                Desktop.getDesktop().open(new File(ruta));
+            } catch (IOException ex) {
+                log("No se pudo abrir el PDF: " + ex.getMessage());
+            }
             JOptionPane.showMessageDialog(this,
                     "PDF del patrono generado:\n" + ruta,
                     "PDF generado",

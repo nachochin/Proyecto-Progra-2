@@ -1,3 +1,4 @@
+// Módulo desarrollado por Erika Rojas
 package vista;
 
 import datos.UsuarioDAO;
