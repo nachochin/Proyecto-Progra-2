@@ -30,7 +30,7 @@ import java.util.Properties;
  * <h3>Configuración para Gmail:</h3>
  * <pre>
  *   host    = smtp.gmail.com
- *   puerto  = 587
+ *   puerto  = 465
  *   usuario = tu_correo@gmail.com
  *   clave   = contraseña de aplicación (no la del correo)
  *   Nota: activar "Contraseñas de aplicación" en la cuenta de Google.
@@ -45,43 +45,34 @@ public class EnvioCorreo {
     // Configuración SMTP
     // -------------------------------------------------------------------------
     /**
-     * Servidor SMTP para el envío de correos.
+     * Servidor SMTP del curso utilizado para el envío de correos.
      */
-    private final String host;
+    private static final String SMTP_HOST = "securemail.comredcr.com";
 
     /**
-     * Puerto del servidor SMTP (587 para TLS, 465 para SSL).
+     * Puerto SSL del servidor SMTP. Se usa el puerto 465 con SSL habilitado.
      */
-    private final int puerto;
+    private static final String SMTP_PUERTO = "465";
 
     /**
-     * Correo remitente (cuenta desde la que se envían los correos).
+     * Correo remitente institucional desde el que se envían los mensajes.
      */
-    private final String usuarioSMTP;
+    private static final String SMTP_USUARIO = "curso_progra2@comredcr.com";
 
     /**
-     * Contraseña o clave de aplicación del remitente.
+     * Contraseña de autenticación del correo remitente.
      */
-    private final String claveSMTP;
+    private static final String SMTP_CLAVE = "u6X1h1p9@";
 
-    // -------------------------------------------------------------------------
-    // Constructor
-    // -------------------------------------------------------------------------
     /**
-     * Crea una instancia del servicio de envío de correos con la configuración
-     * SMTP especificada.
-     *
-     * @param host Servidor SMTP (ej. "smtp.gmail.com").
-     * @param puerto Puerto del servidor (ej. 587).
-     * @param usuarioSMTP Correo remitente (ej. "nomina@empresa.com").
-     * @param claveSMTP Contraseña o clave de aplicación.
+     * Constructor por defecto.
+     * <p>
+     * Las credenciales SMTP están configuradas internamente como constantes
+     * usando el servidor del curso ({@code securemail.comredcr.com}), puerto
+     * 465 con SSL y protocolo TLSv1.2. No requiere parámetros externos.
+     * </p>
      */
-    public EnvioCorreo(String host, int puerto,
-            String usuarioSMTP, String claveSMTP) {
-        this.host = host;
-        this.puerto = puerto;
-        this.usuarioSMTP = usuarioSMTP;
-        this.claveSMTP = claveSMTP;
+    public EnvioCorreo() {
     }
 
     // -------------------------------------------------------------------------
@@ -127,7 +118,7 @@ public class EnvioCorreo {
                 + "correspondiente al período: " + nombreMes(mes) + " " + anio
                 + ", quincena " + quincena + ".\n\n"
                 + "Por favor revise el documento adjunto para verificar los montos.\n\n"
-                + "Sistema de Nómina CR";
+                + "Sistema de conómina cr";
 
         enviar(correoPatrono, asunto, cuerpo, rutaPDF);
     }
@@ -150,13 +141,29 @@ public class EnvioCorreo {
      * @throws MessagingException si ocurre un error en la configuración o
      * envío.
      */
+    /**
+     * Método central que construye y envía el correo con adjunto.
+     * <p>
+     * Configura la sesión SMTP con SSL y protocolo TLSv1.2, construye el
+     * mensaje multipart con cuerpo de texto y archivo PDF adjunto, y lo envía.
+     * </p>
+     *
+     * @param destinatario Dirección de correo del destinatario.
+     * @param asunto Asunto del correo.
+     * @param cuerpo Cuerpo del mensaje en texto plano.
+     * @param rutaAdjunto Ruta local del archivo a adjuntar (puede ser
+     * {@code null}).
+     * @throws MessagingException si ocurre un error en la configuración o
+     * envío.
+     * @throws IOException si ocurre un error al leer el archivo adjunto.
+     */
     private void enviar(String destinatario, String asunto,
             String cuerpo, String rutaAdjunto) throws MessagingException, IOException {
 
         // 1. Configurar propiedades SMTP
         Properties props = new Properties();
-        props.put("mail.smtp.host", "securemail.comredcr.com");
-        props.put("mail.smtp.port", "465");
+        props.put("mail.smtp.host", SMTP_HOST);
+        props.put("mail.smtp.port", SMTP_PUERTO);
         props.put("mail.smtp.auth", "true");
         props.put("mail.smtp.ssl.enable", "true");
         props.put("mail.smtp.ssl.protocols", "TLSv1.2");
@@ -165,25 +172,23 @@ public class EnvioCorreo {
         Session sesion = Session.getInstance(props, new Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(usuarioSMTP, claveSMTP);
+                return new PasswordAuthentication(SMTP_USUARIO, SMTP_CLAVE);
             }
         });
 
         // 3. Construir mensaje
         MimeMessage mensaje = new MimeMessage(sesion);
-        mensaje.setFrom(new InternetAddress(usuarioSMTP, "Sistema de Nómina CR"));
+        mensaje.setFrom(new InternetAddress(SMTP_USUARIO, "Sistema de conómina cr"));
         mensaje.setRecipient(Message.RecipientType.TO, new InternetAddress(destinatario));
         mensaje.setSubject(asunto, "UTF-8");
 
         // 4. Cuerpo multipart (texto + adjunto)
         Multipart multipart = new MimeMultipart();
 
-        // Parte de texto
         MimeBodyPart parteCuerpo = new MimeBodyPart();
         parteCuerpo.setText(cuerpo, "UTF-8");
         multipart.addBodyPart(parteCuerpo);
 
-        // Adjunto PDF
         if (rutaAdjunto != null && !rutaAdjunto.isEmpty()) {
             File archivoPDF = new File(rutaAdjunto);
             if (archivoPDF.exists()) {
@@ -199,10 +204,10 @@ public class EnvioCorreo {
         // 5. Enviar
         Transport.send(mensaje);
     }
-
     // -------------------------------------------------------------------------
     // Utilidades
     // -------------------------------------------------------------------------
+
     /**
      * Construye el cuerpo del correo personalizado para el empleado.
      *
@@ -210,6 +215,7 @@ public class EnvioCorreo {
      * @param nomina Nómina del período.
      * @return Texto del cuerpo del correo.
      */
+
     private String construirCuerpoEmpleado(Empleado empleado, Nomina nomina) {
         return "Estimado(a) " + empleado.getNombre() + ",\n\n"
                 + "Adjunto encontrará su comprobante de nómina correspondiente al período:\n"
@@ -222,7 +228,7 @@ public class EnvioCorreo {
                 + "Para mayor detalle, revise el documento PDF adjunto.\n\n"
                 + "Atentamente,\n"
                 + "Departamento de Recursos Humanos\n"
-                + "Sistema de Nómina CR";
+                + "Sistema de conómina cr";
     }
 
     /**
