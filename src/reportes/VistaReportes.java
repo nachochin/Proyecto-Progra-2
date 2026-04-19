@@ -26,6 +26,7 @@ import java.util.Map;
  * PDF para el empleado o el patrono, y enviarlos por correo electrónico
  * mediante SMTP con SSL.
  * </p>
+ *
  * @version 1.1
  */
 public class VistaReportes extends JPanel {
@@ -487,17 +488,17 @@ public class VistaReportes extends JPanel {
     }
 
     /**
-     * Construye el servicio de correo con los datos del formulario SMTP.
+     * Construye el servicio de correo electrónico.
+     * <p>
+     * Utiliza el constructor sin parámetros de {@link EnvioCorreo} ya que las
+     * credenciales SMTP están configuradas internamente en dicha clase con los
+     * datos del servidor del curso.
+     * </p>
      *
-     * @return Instancia de {@link EnvioCorreo} configurada.
+     * @return Instancia de {@link EnvioCorreo} lista para enviar correos.
      */
     private EnvioCorreo construirServicioCorreo() {
-        return new EnvioCorreo(
-                txtHost.getText().trim(),
-                (int) spnPuerto.getValue(),
-                txtUsuarioSMTP.getText().trim(),
-                new String(txtClaveSMTP.getPassword())
-        );
+        return new EnvioCorreo();
     }
 
     /**
