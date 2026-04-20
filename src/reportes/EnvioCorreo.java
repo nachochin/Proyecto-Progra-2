@@ -118,7 +118,7 @@ public class EnvioCorreo {
                 + "correspondiente al período: " + nombreMes(mes) + " " + anio
                 + ", quincena " + quincena + ".\n\n"
                 + "Por favor revise el documento adjunto para verificar los montos.\n\n"
-                + "Sistema de Nómina CR";
+                + "Sistema de conómina cr";
 
         enviar(correoPatrono, asunto, cuerpo, rutaPDF);
     }
@@ -178,7 +178,11 @@ public class EnvioCorreo {
 
         // 3. Construir mensaje
         MimeMessage mensaje = new MimeMessage(sesion);
+<<<<<<< HEAD
         mensaje.setFrom(new InternetAddress(SMTP_USUARIO, "Sistema de Nómina CR"));
+=======
+        mensaje.setFrom(new InternetAddress(SMTP_USUARIO, "Sistema de conómina cr"));
+>>>>>>> 3d1481079d45984302361aba54d468b4f90a4448
         mensaje.setRecipient(Message.RecipientType.TO, new InternetAddress(destinatario));
         mensaje.setSubject(asunto, "UTF-8");
 
@@ -228,7 +232,7 @@ public class EnvioCorreo {
                 + "Para mayor detalle, revise el documento PDF adjunto.\n\n"
                 + "Atentamente,\n"
                 + "Departamento de Recursos Humanos\n"
-                + "Sistema de Nómina CR";
+                + "Sistema de conómina cr";
     }
 
     /**
