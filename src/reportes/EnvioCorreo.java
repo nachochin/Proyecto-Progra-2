@@ -178,11 +178,7 @@ public class EnvioCorreo {
 
         // 3. Construir mensaje
         MimeMessage mensaje = new MimeMessage(sesion);
-<<<<<<< HEAD
-        mensaje.setFrom(new InternetAddress(SMTP_USUARIO, "Sistema de Nómina CR"));
-=======
         mensaje.setFrom(new InternetAddress(SMTP_USUARIO, "Sistema de conómina cr"));
->>>>>>> 3d1481079d45984302361aba54d468b4f90a4448
         mensaje.setRecipient(Message.RecipientType.TO, new InternetAddress(destinatario));
         mensaje.setSubject(asunto, "UTF-8");
 
