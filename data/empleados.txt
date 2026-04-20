@@ -1,1 +1,2 @@
 01|Juan Perez|juan@nominacr.com|450000.0|TIEMPO_COMPLETO|2020-10-12
+02|IgnacioChincillaLoaiza|nachochin99@gmail.com|750000.0|TIEMPO_COMPLETO|2022-09-24

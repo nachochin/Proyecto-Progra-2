@@ -180,7 +180,7 @@ public class VistaLogin extends JFrame {
         tarjeta.add(Box.createVerticalGlue());
 
         // Versión
-        JLabel lblVersion = new JLabel("conómina cr · v1.1", SwingConstants.CENTER);
+        JLabel lblVersion = new JLabel("conómina cr · v1.7", SwingConstants.CENTER);
         lblVersion.setFont(new Font("Segoe UI", Font.PLAIN, 10));
         lblVersion.setForeground(SUBTEXTO);
         lblVersion.setAlignmentX(CENTER_ALIGNMENT);
