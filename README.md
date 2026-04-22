@@ -1,17 +1,5 @@
-# Proyecto-Progra-2
-
-## Version 1.5
-
-Se agrega las librerias necesarias a la carpeta /lib.
-
-## Version 1.6
-
-Se documenta el autor de los modulos: Vacaciones, VacacionesDAO, VistaVacaciones,GeneradorPDF Nomina y Patrono, Envio correo y Config nomina
-Por: Ignacio Chinchilla.
-
-\# Version 1.7
-
-Se agrega el envio de correos del patrono y de empleado
-
-
-
+## Proyecto-Progra-2
+#Readme
+Este progarama es una interfaz grafica para el registro, administracion y generacion de reportes de los salarios de empleados.
+Se utiliza el progarama de netbeans 21 para el codigo. Se recomienda ponerlo en la carpeta de documentos en windows y luego abrilo usando netbeans.
+Utiliza botones graficos para la ejecucion de los comandos.
